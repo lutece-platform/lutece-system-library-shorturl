@@ -33,9 +33,6 @@ public class ShortUrlJsonResponse extends AbstractJsonResponse
     }
     
   
-   public ShortUrlResponse getShortUrlResponse( )
-   {
-       return _result;
-   }
+ 
 }
 
