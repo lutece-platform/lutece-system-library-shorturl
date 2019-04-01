@@ -37,10 +37,9 @@
         
     
     <properties>
-        <componentName>shorturl</componentName>
-        <jiraProjectName>SHORTURL</jiraProjectName>
-        <jiraComponentId>10362</jiraComponentId>
-    </properties>
+        <componentName>library-shorturl</componentName>
+        <jiraProjectName>LSU</jiraProjectName>
+     </properties>
     <scm>
         <connection>scm:git:https://github.com/lutece-platform/lutece-system-library-shorturl.git</connection>
         <developerConnection>scm:git:https://github.com/lutece-platform/lutece-system-library-shorturl.git</developerConnection>
