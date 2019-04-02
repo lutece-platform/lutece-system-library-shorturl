@@ -1,32 +1,46 @@
 package fr.paris.lutece.plugins.shorturl.service;
 
-public class ShortUrlResponse 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public class ShortUrlResponse
 {
+    @JsonProperty( "url" )
     private String _strUrl;
+    @JsonProperty( "key" )
     private String _strKey;
-    
+
+    @JsonProperty( "url" )
     public String getUrl( )
     {
         return _strUrl;
     }
-    public void setUrl( String _strUrl )
+
+    @JsonProperty( "url" )
+    public void setUrl( String strUrl )
     {
-        this._strUrl = _strUrl;
+        _strUrl = strUrl;
     }
+
+    @JsonProperty( "key" )
     public String getKey( )
     {
         return _strKey;
     }
-    public void setKey( String _strKey )
+
+    @JsonProperty( "key" )
+    public void setKey( String strKey )
     {
-        this._strKey = _strKey;
+        _strKey = strKey;
     }
+
     public ShortUrlResponse( String strUrl, String strKey )
     {
-        super( );
-        this._strUrl = strUrl;
-        this._strKey = strKey;
+        _strUrl = strUrl;
+        _strKey = strKey;
     }
     
+    public ShortUrlResponse( )
+    {
+    }
 
 }
