@@ -35,13 +35,13 @@ package fr.paris.lutece.plugins.shorturl.service;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
-
+/**
+ * ShortUrlJsonResponse
+ * 
+ */
 public class ShortUrlJsonResponse implements Serializable
 {
-    /**
-     * ShortUrlJsonResponse
-     * 
-     */
+    
     private static final String STATUS_OK = "OK";
     @JsonProperty( "result" )
     private ShortUrlResponse _result;

@@ -32,27 +32,30 @@
  * License 1.0
  */
 package fr.paris.lutece.plugins.shorturl.service;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 public class ShortUrlResponse
 {
+    @JsonProperty( "url" )
     private String _strUrl;
+    @JsonProperty( "key" )
     private String _strKey;
-
+    
+    @JsonProperty( "url" )
     public String getUrl( )
     {
         return _strUrl;
     }
-
+    @JsonProperty( "url" )
     public void setUrl( String _strUrl )
     {
         this._strUrl = _strUrl;
     }
-
+    @JsonProperty( "key" )
     public String getKey( )
     {
         return _strKey;
     }
-
+    @JsonProperty( "key" )
     public void setKey( String _strKey )
     {
         this._strKey = _strKey;
@@ -64,5 +67,9 @@ public class ShortUrlResponse
         this._strUrl = strUrl;
         this._strKey = strKey;
     }
+    
+    public ShortUrlResponse(  )
+    {
+     }
 
 }
