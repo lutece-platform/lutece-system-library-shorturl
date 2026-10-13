@@ -1,5 +1,5 @@
 ![](https://dev.lutece.paris.fr/jenkins/buildStatus/icon?job=system-library-shorturl-deploy)
-# Library Identitystore
+# Library ShortUrl
 
 ## Introduction
 
@@ -9,36 +9,50 @@ This library provides services to communicate with ShortUrlPlugin using REST.
 
 The main service is `fr.paris.lutece.plugins.shorturl.service.ShortUrlClientService` which provides methods to call ShortUrlPlugin.
 
-## Configuration using Spring context
+## Configuration with a CDI producer
 
-Define the server Base Url if the client and the plugin short url are not in the same WebApp.
+Define the server base url when the client and the shorturl plugin are not in the same webapp. Without it, the client calls the webapp of the current request.
 
-Here is an example :
+Here is an example of producer in the calling plugin :
 ```
 
-        <beanbean id="notifygru-usergu.library-shortUrlClient"
-		   class="fr.paris.lutece.plugins.shorturl.service.ShortUrlClientService" p:serverBaseUrl="http://localhost:8080/lutece" >
+@ApplicationScoped
+public class ShortUrlClientProducer
+{
+    @Produces
+    @ApplicationScoped
+    @Named( "myplugin.shortUrlClient" )
+    public IShortUrlClientService produce( @ConfigProperty( name = "myplugin.shorturl.serverBaseUrl" ) Optional<String> serverBaseUrl )
+    {
+        IShortUrlClientService client = new ShortUrlClientService( );
+        serverBaseUrl.ifPresent( client::setServerBaseUrl );
+        return client;
+    }
+}
                         
+```
 
+and the property, in `myplugin.properties` :
+```
+
+myplugin.shorturl.serverBaseUrl=http://localhost:8080/lutece
                         
 ```
 
-
-## Configuration in Java code
-
-The service can directly be created in the Java code. Here is an example.
-
+## Usage in Java code
 
 ```
 
-        private ShortUrlClientService _shortUrlClientService=SpringContextService.getBean( "notifygru-usergu.library-shortUrlClient" );
-        ...           
-        ...                
-		ShortUrlJsonResponse shortUrlJsonResponse=_shortUrlClientService.createShortener( strLongUrl, true, httpServletRequest);
-        if(shortUrlJsonResponse.getResult( )!=null)
-        {
-           String urlSms = shortUrlJsonResponse.getResult( ).getUrl( );
-        }                        
+@Inject
+@Named( "myplugin.shortUrlClient" )
+private IShortUrlClientService _shortUrlClientService;
+...
+ShortUrlJsonResponse shortUrlJsonResponse = _shortUrlClientService.createShortener( strLongUrl, true, request );
+if ( shortUrlJsonResponse != null && shortUrlJsonResponse.getResult( ) != null )
+{
+    String strShortUrl = shortUrlJsonResponse.getResult( ).getUrl( );
+}
+                        
 ```
 
 
