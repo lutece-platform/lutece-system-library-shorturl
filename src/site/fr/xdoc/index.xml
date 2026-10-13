@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document>
     <properties>
-        <title>Library Identitystore</title>
+        <title>Library ShortUrl</title>
     </properties>
     <body>
-        <section name="Library Identitystore">
+        <section name="Library ShortUrl">
             <subsection name="Introduction">
                 <p>
                 This library provides services to communicate with ShortUrlPlugin using  REST.
@@ -17,41 +17,56 @@
                
               
             </subsection>
-            <subsection name="Configuration using Spring context">
+            <subsection name="Configuration with a CDI producer">
                 <p>
-                Define the  server Base Url if the client and the plugin short url are not in the same WebApp.
+                Define the server base url when the client and the shorturl plugin are not in the same webapp.
+                Without it, the client calls the webapp of the current request.
                 </p>
                 <p>
-                Here is an example :
+                Here is an example of producer in the calling plugin :
                     <div class="source">
                         <pre>
-        &lt;beanbean id="notifygru-usergu.library-shortUrlClient"
-		   class="fr.paris.lutece.plugins.shorturl.service.ShortUrlClientService" p:serverBaseUrl="http://localhost:8080/lutece" &gt;
-                        
-
+@ApplicationScoped
+public class ShortUrlClientProducer
+{
+    @Produces
+    @ApplicationScoped
+    @Named( "myplugin.shortUrlClient" )
+    public IShortUrlClientService produce( @ConfigProperty( name = "myplugin.shorturl.serverBaseUrl" ) Optional&lt;String&gt; serverBaseUrl )
+    {
+        IShortUrlClientService client = new ShortUrlClientService( );
+        serverBaseUrl.ifPresent( client::setServerBaseUrl );
+        return client;
+    }
+}
                         </pre>
                     </div>
                 </p>
-          
-            </subsection>
-            <subsection name="Configuration in Java code">
                 <p>
-                The service can directly be created in the Java code. Here is an example.
+                and the property, in <code>myplugin.properties</code> :
+                    <div class="source">
+                        <pre>
+myplugin.shorturl.serverBaseUrl=http://localhost:8080/lutece
+                        </pre>
+                    </div>
                 </p>
+            </subsection>
+            <subsection name="Usage in Java code">
                 <p>
                     <div class="source">
                         <pre>
-        private ShortUrlClientService _shortUrlClientService=SpringContextService.getBean( "notifygru-usergu.library-shortUrlClient" );
-        ...           
-        ...                
-		ShortUrlJsonResponse shortUrlJsonResponse=_shortUrlClientService.createShortener( strLongUrl, true, httpServletRequest);
-        if(shortUrlJsonResponse.getResult( )!=null)
-        {
-           String urlSms = shortUrlJsonResponse.getResult( ).getUrl( );
-        }                        </pre>  
+@Inject
+@Named( "myplugin.shortUrlClient" )
+private IShortUrlClientService _shortUrlClientService;
+...
+ShortUrlJsonResponse shortUrlJsonResponse = _shortUrlClientService.createShortener( strLongUrl, true, request );
+if ( shortUrlJsonResponse != null &amp;&amp; shortUrlJsonResponse.getResult( ) != null )
+{
+    String strShortUrl = shortUrlJsonResponse.getResult( ).getUrl( );
+}
+                        </pre>
                     </div>
                 </p>
-               
             </subsection>
         </section>
     </body>

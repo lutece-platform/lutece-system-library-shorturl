@@ -33,8 +33,14 @@
  */
 package fr.paris.lutece.plugins.shorturl.service;
 import com.fasterxml.jackson.annotation.JsonProperty;
-public class ShortUrlResponse
+import java.io.Serializable;
+
+/**
+ * Short url and its key, as answered by the shorturl server.
+ */
+public class ShortUrlResponse implements Serializable
 {
+    private static final long serialVersionUID = 1L;
     @JsonProperty( "url" )
     private String _strUrl;
     @JsonProperty( "key" )

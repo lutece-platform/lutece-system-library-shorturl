@@ -33,7 +33,7 @@
  */
 package fr.paris.lutece.plugins.shorturl.service;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * 
@@ -62,7 +62,7 @@ public interface IShortUrlClientService
      *            true if the shortUrl can be used just one time
      * @param request
      *            the request
-     * @return
+     * @return the shortener response, or null on error
      */
     ShortUrlJsonResponse createShortener( String strUrl, boolean bUseOnce, HttpServletRequest request );
 
@@ -78,9 +78,10 @@ public interface IShortUrlClientService
     boolean deleteShortener( String strKey, HttpServletRequest request );
 
     /**
-     * set serverUrl
+     * Sets the base url of the shorturl server, when it is not the webapp of the request.
      * 
      * @param strServerUrl
+     *            the server base url
      */
-    void setServerBaseUrl( String serverUrl );
+    void setServerBaseUrl( String strServerUrl );
 }

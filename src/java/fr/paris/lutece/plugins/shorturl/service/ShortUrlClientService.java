@@ -36,9 +36,10 @@ package fr.paris.lutece.plugins.shorturl.service;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,7 +47,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.util.httpaccess.HttpAccess;
-import fr.paris.lutece.util.json.JsonResponse;
 
 /**
  * 
@@ -59,6 +59,9 @@ public class ShortUrlClientService implements IShortUrlClientService
     private String _strShortServerUrl = null;
 
     private static final String STATUS_OK = "OK";
+    private static final String FIELD_STATUS = "status";
+    private static final String PATH_PORTAL = "/jsp/site/Portal.jsp";
+    private static final String SLASH = "/";
 
     private static final String ACTION_DO_CREATE_WS = "do_create_ws";
     private static final String ACTION_DO_DELETE_WS = "do_delete_ws";
@@ -102,13 +105,11 @@ public class ShortUrlClientService implements IShortUrlClientService
 
         mapParams.put( PARAMETER_USE_ONCE, Boolean.toString( bUseOnce ) );
 
-        String serverUrl = StringUtils.isEmpty( _strShortServerUrl ) ? AppPathService.getBaseUrl( request ) : _strShortServerUrl;
-
         String strOutput = StringUtils.EMPTY;
 
         try
         {
-            strOutput = clientHttp.doPost( serverUrl + "/jsp/site/Portal.jsp", mapParams, null, null, null, null );
+            strOutput = clientHttp.doPost( getPortalUrl( request ), mapParams, null, null, null, null );
             shortUrlJsonResponse = _mapper.readValue( strOutput, ShortUrlJsonResponse.class );
         }
         catch( Exception e )
@@ -134,15 +135,14 @@ public class ShortUrlClientService implements IShortUrlClientService
         mapParams.put( PARAMETER_KEY, strKey );
         mapParams.put( PARAMETER_PAGE, SHORT_XPAGE );
 
-        JsonResponse deleteResponse = null;
+        boolean bDeleted = false;
 
         String strOutput = StringUtils.EMPTY;
-        String serverUrl = StringUtils.isEmpty( _strShortServerUrl ) ? AppPathService.getBaseUrl( request ) : _strShortServerUrl;
 
         try
         {
-            strOutput = clientHttp.doPost( serverUrl, mapParams, null, null, null, null );
-            deleteResponse = _mapper.readValue( strOutput, JsonResponse.class );
+            strOutput = clientHttp.doPost( getPortalUrl( request ), mapParams, null, null, null, null );
+            bDeleted = STATUS_OK.equals( _mapper.readTree( strOutput ).path( FIELD_STATUS ).asText( ) );
         }
         catch( Exception e )
         {
@@ -150,7 +150,7 @@ public class ShortUrlClientService implements IShortUrlClientService
 
         }
 
-        return deleteResponse != null && deleteResponse.getStatus( ).equals( STATUS_OK );
+        return bDeleted;
 
     }
 
@@ -158,9 +158,23 @@ public class ShortUrlClientService implements IShortUrlClientService
      * {@inheritDoc}
      */
     @Override
-    public void setServerBaseUrl( String _strServerUrl )
+    public void setServerBaseUrl( String strServerUrl )
     {
-        this._strShortServerUrl = _strServerUrl;
+        this._strShortServerUrl = strServerUrl;
+    }
+
+    /**
+     * Builds the url of the portal of the shorturl server: the configured base url, else the base url of the request.
+     *
+     * @param request
+     *            the request
+     * @return the portal url
+     */
+    private String getPortalUrl( HttpServletRequest request )
+    {
+        String strServerUrl = StringUtils.isEmpty( _strShortServerUrl ) ? AppPathService.getBaseUrl( request ) : _strShortServerUrl;
+
+        return Strings.CS.removeEnd( strServerUrl, SLASH ) + PATH_PORTAL;
     }
 
 }
